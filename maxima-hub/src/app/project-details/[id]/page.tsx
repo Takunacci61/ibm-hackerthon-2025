@@ -223,33 +223,44 @@ export default function ProjectDetails({ params }: { params: PageParams }) {
   };
 
   const handleExportAsImagePDF = async () => {
-    // Select the element that you want to capture
     const exportElement = document.getElementById('exportable');
     if (!exportElement) return;
 
-    // Use html2canvas to take a screenshot of the element
-    const canvas = await html2canvas(exportElement, {
-      scrollY: -window.scrollY, // Fix potential scrolling issues
-      useCORS: true, // If you are loading images from external sources
-    });
-    const imgData = canvas.toDataURL('image/png');
-
-    // Create a new jsPDF instance
     const pdf = new jsPDF('p', 'pt', 'a4');
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = pdf.internal.pageSize.getHeight();
+    
+    // Get the total height of the content
+    const totalHeight = exportElement.scrollHeight;
+    let position = 0;
+    
+    while (position < totalHeight) {
+      // Capture the visible portion of the element
+      const canvas = await html2canvas(exportElement, {
+        scrollY: -position,
+        windowHeight: pdfHeight,
+        useCORS: true,
+      });
+      
+      const imgData = canvas.toDataURL('image/png');
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+      const width = imgWidth * ratio;
+      const height = imgHeight * ratio;
+      
+      // Add the image to the current page
+      pdf.addImage(imgData, 'PNG', 0, 0, width, height);
+      
+      // Move position for next page
+      position += pdfHeight;
+      
+      // Add new page if there's more content
+      if (position < totalHeight) {
+        pdf.addPage();
+      }
+    }
 
-    // Compute the height of the image in the PDF while keeping the aspect ratio
-    const imgWidth = canvas.width;
-    const imgHeight = canvas.height;
-    const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-    const width = imgWidth * ratio;
-    const height = imgHeight * ratio;
-
-    // Add the image to the PDF document
-    pdf.addImage(imgData, 'PNG', 0, 0, width, height);
-
-    // Trigger the download
     pdf.save(`${project?.title || 'report'}.pdf`);
   };
 
