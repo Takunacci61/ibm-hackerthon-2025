@@ -166,54 +166,70 @@ export default function ProjectDetails({ params }: { params: PageParams }) {
 
   const handleExportProjectDetails = () => {
     if (!project) return;
-    const doc = new jsPDF();
-    
-    // Set background color
-    doc.setFillColor(250, 250, 250);
-    doc.rect(0, 0, 220, 297, 'F');
+    const doc = new jsPDF('p', 'pt', 'a4');
+    let yPosition = 20;
 
-    // Header
-    doc.setFillColor(255, 255, 255);
-    doc.roundedRect(10, 10, 190, 40, 3, 3, 'F');
+    // --- Project Info ---
     doc.setFontSize(20);
-    doc.setTextColor(45, 45, 45);
-    doc.text(project.title, 20, 25);
-    doc.setFontSize(11);
-    doc.setTextColor(100, 100, 100);
-    doc.text(project.description, 20, 35, { maxWidth: 170 });
+    doc.text(project.title, 20, yPosition);
+    yPosition += 30;
 
-    // Stats Grid
-    const statsY = 65;
-    ['Team Size', 'Budget', 'Location', 'Created'].forEach((label, i) => {
-      const x = 20 + (i * 45);
-      doc.setFontSize(10);
-      doc.setTextColor(100, 100, 100);
-      doc.text(label, x, statsY);
-      
+    doc.setFontSize(12);
+    doc.text(`Description: ${project.description || ''}`, 20, yPosition);
+    yPosition += 20;
+    doc.text(`Team Size: ${project.team_size}`, 20, yPosition);
+    yPosition += 20;
+    doc.text(`Budget: ${project.budget || ''}`, 20, yPosition);
+    yPosition += 20;
+    doc.text(`Location: ${project.country || ''}`, 20, yPosition);
+    yPosition += 20;
+    doc.text(`Created: ${formatDate(project.created_at)}`, 20, yPosition);
+    yPosition += 30;
+
+    // --- AI Evaluation Info ---
+    if (evaluation) {
+      doc.setFontSize(16);
+      doc.text("AI Evaluation", 20, yPosition);
+      yPosition += 20;
+
       doc.setFontSize(12);
-      doc.setTextColor(45, 45, 45);
-      const value = {
-        'Team Size': `${project.team_size}`,
-        'Budget': project.budget,
-        'Location': project.country,
-        'Created': formatDate(project.created_at)
-      }[label];
-      doc.text(value || '', x, statsY + 7);
-    });
+      doc.text(`Feasibility Score: ${evaluation.feasibility_score.toFixed(1)}`, 20, yPosition);
+      yPosition += 20;
+      doc.text(`Analysis: ${evaluation.analysis || ''}`, 20, yPosition);
+      yPosition += 20;
+      if(evaluation.plan) {
+        doc.text(`Plan: ${evaluation.plan}`, 20, yPosition);
+        yPosition += 20;
+      }
+      if(evaluation.detailed_description) {
+        doc.text(`Details: ${evaluation.detailed_description}`, 20, yPosition);
+        yPosition += 20;
+      }
+      yPosition += 10;
+    }
 
-    // Timeline
-    doc.setFillColor(255, 255, 255);
-    doc.roundedRect(10, 90, 190, 40, 3, 3, 'F');
-    doc.setFontSize(14);
-    doc.setTextColor(45, 45, 45);
-    doc.text('Project Timeline', 20, 105);
-    
-    // Timeline dates
-    doc.setFontSize(11);
-    doc.text(formatDate(project.start_date), 20, 120);
-    doc.text(formatDate(project.end_date), 160, 120);
+    // --- Project Tasks Info ---
+    if (tasks.length > 0) {
+      doc.setFontSize(16);
+      doc.text("Project Tasks", 20, yPosition);
+      yPosition += 20;
 
-    // Save the PDF
+      doc.setFontSize(12);
+      tasks.forEach((task, index) => {
+        doc.text(`Task ${index + 1}: ${task.task || ''}`, 20, yPosition);
+        yPosition += 15;
+        doc.text(`Team Member: ${task.team_member_number}`, 20, yPosition);
+        yPosition += 15;
+        doc.text(`Estimated Salary: $${task.estimate_salary}`, 20, yPosition);
+        yPosition += 15;
+        doc.text(`Start: ${formatDate(task.start_date_time)}`, 20, yPosition);
+        yPosition += 15;
+        doc.text(`End: ${formatDate(task.end_date_time)}`, 20, yPosition);
+        yPosition += 20;
+      });
+    }
+
+    // Save the PDF file
     doc.save(`${project.title}-report.pdf`);
   };
 
