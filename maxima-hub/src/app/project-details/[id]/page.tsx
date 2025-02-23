@@ -235,14 +235,19 @@ export default function ProjectDetails({ params }: { params: PageParams }) {
     let position = 0;
     
     while (position < totalHeight) {
-      // Capture the visible portion of the element
+      // Capture the visible portion of the element with styles intact
       const canvas = await html2canvas(exportElement, {
         scrollY: -position,
         windowHeight: pdfHeight,
         useCORS: true,
-        scale: 2, // Increase scale for better quality
+        scale: 2, // Higher scale for better quality
         logging: true, // Optional: for debugging
         allowTaint: true, // Allow cross-origin images
+        backgroundColor: '#ffffff', // Ensure white background
+        ignoreElements: (element) => {
+          // Ignore elements that might interfere with the capture
+          return element.classList.contains('ignore-in-export');
+        },
       });
       
       const imgData = canvas.toDataURL('image/png', 1.0);
