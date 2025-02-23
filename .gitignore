@@ -1,1 +1,12 @@
 /maxima-hub/node_modules
+backend/.env
+/backend/accounts/__pycache__
+backend/accounts/migrations/0001_initial.py
+/backend/accounts/migrations/__pycache__
+/backend/backend/__pycache__
+backend/core/migrations/0003_remove_project_use_of_ai_aid_alter_project_budget_and_more.py
+backend/core/migrations/0002_alter_project_use_of_ai_aid.py
+backend/core/migrations/0001_initial.py
+/maxima-hub/.next
+backend/db.sqlite3
+backend/backend/.env
