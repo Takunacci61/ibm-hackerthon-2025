@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
+import { jsPDF } from 'jspdf';
 
 interface Project {
   id: number;
@@ -35,6 +36,7 @@ interface ProjectTask {
   start_date_time: string;
   end_date_time: string;
   description: string;
+  estimate_salary: number;
   created_at: string;
 }
 
@@ -159,6 +161,33 @@ export default function ProjectDetails({ params }: { params: PageParams }) {
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('user_id');
     router.push('/login');
+  };
+
+  const handleExportProjectDetails = () => {
+    if (!project) return;
+    const doc = new jsPDF();
+    let yPosition = 10;
+
+    doc.setFontSize(18);
+    doc.text(project.title, 10, yPosition);
+    yPosition += 12;
+
+    doc.setFontSize(12);
+    doc.text(`Description: ${project.description}`, 10, yPosition);
+    yPosition += 10;
+    doc.text(`Team Size: ${project.team_size}`, 10, yPosition);
+    yPosition += 10;
+    doc.text(`Budget: ${project.budget}`, 10, yPosition);
+    yPosition += 10;
+    doc.text(`Location: ${project.country}`, 10, yPosition);
+    yPosition += 10;
+    doc.text(`Created: ${formatDate(project.created_at)}`, 10, yPosition);
+    yPosition += 10;
+    doc.text(`Start Date: ${formatDate(project.start_date)}`, 10, yPosition);
+    yPosition += 10;
+    doc.text(`End Date: ${formatDate(project.end_date)}`, 10, yPosition);
+
+    doc.save(`${project.title}-details.pdf`);
   };
 
   const formatDate = (dateString: string) => {
@@ -423,6 +452,7 @@ export default function ProjectDetails({ params }: { params: PageParams }) {
                             <div className="space-y-1">
                               <h3 className="text-lg font-medium text-gray-900">{task.task}</h3>
                               <p className="text-sm text-gray-500">Team Member #{task.team_member_number}</p>
+                              <p className="text-sm text-gray-500">Estimated Salary: ${task.estimate_salary}</p>
                             </div>
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                               Task #{task.id}
@@ -525,9 +555,12 @@ export default function ProjectDetails({ params }: { params: PageParams }) {
                         {isGeneratingTasks ? 'Generating Tasks...' : 'Generate Tasks'}
                       </button>
                     )}
-                    <button className="w-full flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium
-                                     text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-200
-                                     transition-all duration-200 ease-in-out">
+                    <button
+                      onClick={handleExportProjectDetails}
+                      className="w-full flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium
+                                 text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-200
+                                 transition-all duration-200 ease-in-out"
+                    >
                       Export Project Details
                     </button>
                   </div>
