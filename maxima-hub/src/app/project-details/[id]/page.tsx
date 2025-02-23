@@ -168,64 +168,53 @@ export default function ProjectDetails({ params }: { params: PageParams }) {
     if (!project) return;
     const doc = new jsPDF('p', 'pt', 'a4');
     let yPosition = 20;
+    const marginBottom = 20;
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    // Helper function to add text and insert a new page if needed
+    const addText = (text: string, fontSize: number = 12, lineHeight: number = 20) => {
+      doc.setFontSize(fontSize);
+      doc.text(text, 20, yPosition);
+      yPosition += lineHeight;
+      if (yPosition > pageHeight - marginBottom) {
+        doc.addPage();
+        yPosition = 20;
+      }
+    };
 
     // --- Project Info ---
-    doc.setFontSize(20);
-    doc.text(project.title, 20, yPosition);
-    yPosition += 30;
-
-    doc.setFontSize(12);
-    doc.text(`Description: ${project.description || ''}`, 20, yPosition);
-    yPosition += 20;
-    doc.text(`Team Size: ${project.team_size}`, 20, yPosition);
-    yPosition += 20;
-    doc.text(`Budget: ${project.budget || ''}`, 20, yPosition);
-    yPosition += 20;
-    doc.text(`Location: ${project.country || ''}`, 20, yPosition);
-    yPosition += 20;
-    doc.text(`Created: ${formatDate(project.created_at)}`, 20, yPosition);
-    yPosition += 30;
-
+    addText(project.title, 20, 30);
+    addText(`Description: ${project.description || ''}`);
+    addText(`Team Size: ${project.team_size}`);
+    addText(`Budget: ${project.budget || ''}`);
+    addText(`Location: ${project.country || ''}`);
+    addText(`Created: ${formatDate(project.created_at)}`);
+    yPosition += 10; // extra spacing
+    
     // --- AI Evaluation Info ---
     if (evaluation) {
-      doc.setFontSize(16);
-      doc.text("AI Evaluation", 20, yPosition);
-      yPosition += 20;
-
-      doc.setFontSize(12);
-      doc.text(`Feasibility Score: ${evaluation.feasibility_score.toFixed(1)}`, 20, yPosition);
-      yPosition += 20;
-      doc.text(`Analysis: ${evaluation.analysis || ''}`, 20, yPosition);
-      yPosition += 20;
-      if(evaluation.plan) {
-        doc.text(`Plan: ${evaluation.plan}`, 20, yPosition);
-        yPosition += 20;
+      addText("AI Evaluation", 16, 20);
+      addText(`Feasibility Score: ${evaluation.feasibility_score.toFixed(1)}`);
+      addText(`Analysis: ${evaluation.analysis || ''}`);
+      if (evaluation.plan) {
+        addText(`Plan: ${evaluation.plan}`);
       }
-      if(evaluation.detailed_description) {
-        doc.text(`Details: ${evaluation.detailed_description}`, 20, yPosition);
-        yPosition += 20;
+      if (evaluation.detailed_description) {
+        addText(`Details: ${evaluation.detailed_description}`);
       }
       yPosition += 10;
     }
 
     // --- Project Tasks Info ---
     if (tasks.length > 0) {
-      doc.setFontSize(16);
-      doc.text("Project Tasks", 20, yPosition);
-      yPosition += 20;
-
-      doc.setFontSize(12);
+      addText("Project Tasks", 16, 20);
       tasks.forEach((task, index) => {
-        doc.text(`Task ${index + 1}: ${task.task || ''}`, 20, yPosition);
-        yPosition += 15;
-        doc.text(`Team Member: ${task.team_member_number}`, 20, yPosition);
-        yPosition += 15;
-        doc.text(`Estimated Salary: $${task.estimate_salary}`, 20, yPosition);
-        yPosition += 15;
-        doc.text(`Start: ${formatDate(task.start_date_time)}`, 20, yPosition);
-        yPosition += 15;
-        doc.text(`End: ${formatDate(task.end_date_time)}`, 20, yPosition);
-        yPosition += 20;
+        addText(`Task ${index + 1}: ${task.task || ''}`);
+        addText(`Team Member: ${task.team_member_number}`, 12, 15);
+        addText(`Estimated Salary: $${task.estimate_salary}`, 12, 15);
+        addText(`Start: ${formatDate(task.start_date_time)}`, 12, 15);
+        addText(`End: ${formatDate(task.end_date_time)}`, 12, 15);
+        yPosition += 5;
       });
     }
 
