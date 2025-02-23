@@ -11,7 +11,7 @@ interface NavbarProps {
 export default function Navbar({ onLogout }: NavbarProps) {
   const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
-  const username = localStorage.getItem('user_id');
+  const username = typeof window !== 'undefined' ? localStorage.getItem('user_id') : null;
 
   // Handle scroll effect
   useEffect(() => {
