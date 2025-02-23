@@ -73,7 +73,7 @@ export default function ProjectDetails({ params }: { params: PageParams }) {
   const fetchProjectDetails = async () => {
     try {
       const token = localStorage.getItem('access_token');
-      const res = await fetch(`http://127.0.0.1:8000/api/core/api/projects/${projectId}/`, {
+      const res = await fetch(`https://docs.smartassetpath.com/api/core/api/projects/${projectId}/`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -95,7 +95,7 @@ export default function ProjectDetails({ params }: { params: PageParams }) {
   const fetchAIEvaluation = async () => {
     try {
       const token = localStorage.getItem('access_token');
-      const res = await fetch(`http://localhost:8000/api/core/projects/${projectId}/ai-evaluation/`, {
+      const res = await fetch(`https://docs.smartassetpath.com/api/core/projects/${projectId}/ai-evaluation/`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -115,7 +115,7 @@ export default function ProjectDetails({ params }: { params: PageParams }) {
   const fetchProjectTasks = async () => {
     try {
       const token = localStorage.getItem('access_token');
-      const res = await fetch(`http://localhost:8000/api/core/api/project/${projectId}/tasks/`, {
+      const res = await fetch(`https://docs.smartassetpath.com/api/core/api/project/${projectId}/tasks/`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -136,7 +136,7 @@ export default function ProjectDetails({ params }: { params: PageParams }) {
     setIsGeneratingTasks(true);
     try {
       const token = localStorage.getItem('access_token');
-      const res = await fetch('http://localhost:8000/api/core/api/projects/tasks/generate/', {
+      const res = await fetch('https://docs.smartassetpath.com/api/core/api/projects/tasks/generate/', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

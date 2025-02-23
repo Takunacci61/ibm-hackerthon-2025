@@ -103,7 +103,7 @@ export default function Dashboard() {
   const fetchProjects = async () => {
     try {
       const token = localStorage.getItem('access_token');
-      const res = await fetch('http://127.0.0.1:8000/api/core/api/projects/', {
+      const res = await fetch('https://docs.smartassetpath.com/api/core/api/projects/', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -123,7 +123,7 @@ export default function Dashboard() {
   const fetchStatistics = async () => {
     try {
       const token = localStorage.getItem('access_token');
-      const res = await fetch('http://127.0.0.1:8000/api/core/projects/statistics/', {
+      const res = await fetch('https://docs.smartassetpath.com/api/core/projects/statistics/', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -145,7 +145,7 @@ export default function Dashboard() {
 
     try {
       const token = localStorage.getItem('access_token');
-      const res = await fetch('http://127.0.0.1:8000/api/core/api/projects/', {
+      const res = await fetch('https://docs.smartassetpath.com/api/core/api/projects/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
