@@ -240,11 +240,16 @@ export default function ProjectDetails({ params }: { params: PageParams }) {
         scrollY: -position,
         windowHeight: pdfHeight,
         useCORS: true,
+        scale: 2, // Increase scale for better quality
+        logging: true, // Optional: for debugging
+        allowTaint: true, // Allow cross-origin images
       });
       
-      const imgData = canvas.toDataURL('image/png');
+      const imgData = canvas.toDataURL('image/png', 1.0);
       const imgWidth = canvas.width;
       const imgHeight = canvas.height;
+      
+      // Calculate aspect ratio and dimensions
       const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
       const width = imgWidth * ratio;
       const height = imgHeight * ratio;
